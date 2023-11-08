@@ -6,7 +6,7 @@ You might want to use the same to read it.
 
 ---
 
-"Not everyone knows what you know"
+"Not everyone knows what you know"\
 Apparently, not everyone is Cisco-certified or familiar with lots of 
 
 This is also my way of testing Git capabilities in Infineon environments.
