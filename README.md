@@ -2,7 +2,8 @@
 
 Some theoretical must-knows related to Infineon IT OS NI network operation works.\
 I fully used Obsidian to write these. 
-You might want to use the same to read it.
+You might want to use the same to read it.\
+https://obsidian.md/
 
 ---
 
