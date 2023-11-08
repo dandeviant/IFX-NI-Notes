@@ -7,4 +7,4 @@ Some theoretical must-knows related to Infineon IT OS NI network operation works
 Apparently, not everyone is Cisco-certified or familiar with lots of 
 
 This is also my way of testing Git capabilities in Infineon environments.
-Being able to use Git
+Being able to use Git could be a massive help, to me anyway...
