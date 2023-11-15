@@ -5,7 +5,11 @@
 !# Switch Model  : Cisco Cat 9300L
 !# "Inspiration" : sa-my-mkz-b05-0024-fab (Stack C9300)
 !# Config Status : DO NOT RUN IN ACTUAL SWITCH  
+!# Notes:
+!# Already removed all the unnecessary config from the sample. Just need to tweak few things
+!# No login-related configs here
 
+version 17.3 
 service tcp-keepalives-in 
 service tcp-keepalives-out 
 service timestamps debug datetime localtime show-timezone 
@@ -28,7 +32,7 @@ vrf definition Mgmt-vrf
 logging snmp-authfail 
 logging queue-limit 100 
 logging buffered 32768 warnings 
-no logging console 
+no logging console
 ! 
 aaa new-model 
 ! 
@@ -191,7 +195,7 @@ spanning-tree loopguard default
 spanning-tree extend system-id 
 memory free low-watermark processor 134356 
 ! 
-errdisable recovery cause security-violation 
+errdisable recovery cause security-violation  
 ! 
 redundancy 
  mode sso 
@@ -268,3 +272,342 @@ policy-map PM-ISC-VLAN
 policy-map system-cpp-policy 
 ! 
 !  
+! 
+! 
+! 
+! 
+! 
+! 
+! 
+! 
+!
+interface GigabitEthernet1/1/1 
+ description #UPLINK sd-my-mkz-b05-0101.ap.lan 
+ switchport mode trunk 
+ device-tracking attach-policy DT_trunk_policy 
+ ip dhcp snooping trust 
+! 
+interface GigabitEthernet1/1/2 
+ shutdown 
+! 
+interface GigabitEthernet1/1/3 
+ shutdown 
+! 
+interface GigabitEthernet1/1/4 
+ shutdown 
+!
+interface GigabitEthernet2/1/1 
+ shutdown 
+! 
+interface GigabitEthernet2/1/2 
+ shutdown 
+! 
+interface GigabitEthernet2/1/3 
+ shutdown 
+! 
+interface GigabitEthernet2/1/4 
+ shutdown 
+!
+interface GigabitEthernet3/1/1 
+ description #UPLINK sd-my-mkz-b06-m101.ap.lan 
+ switchport mode trunk 
+ device-tracking attach-policy DT_trunk_policy 
+ ip dhcp snooping trust 
+! 
+interface GigabitEthernet3/1/2 
+ shutdown 
+! 
+interface GigabitEthernet3/1/3 
+ shutdown 
+! 
+interface GigabitEthernet3/1/4 
+ shutdown 
+!
+interface Vlan1 
+ no ip address 
+ shutdown 
+! 
+interface Vlan95 
+ ip address dhcp 
+ no logging event link-status 
+ no snmp trap link-status 
+! 
+interface Vlan99 
+ description NOC-MGMT 
+ ip address 172.30.145.204 255.255.255.192 
+! 
+interface Vlan667 
+ ip address dhcp 
+ service-policy input PM-VOICE-VLAN 
+! 
+interface Vlan1050 
+ no ip address 
+ service-policy input PM-ISC-VLAN 
+! 
+ip default-gateway 172.30.145.254 
+ip forward-protocol nd 
+no ip http server 
+ip http authentication local 
+no ip http secure-server 
+ip http client source-interface Vlan99 
+ip ftp source-interface Vlan99 
+ip ftp username nocuser 
+ip tftp source-interface Vlan99 
+ip tacacs source-interface Vlan99  
+ip ssh time-out 20 
+ip ssh source-interface Vlan99 
+ip ssh version 2 
+! 
+ip access-list standard line-access 
+ 10 permit 172.30.0.0 0.0.255.255 
+ 20 permit 10.30.0.0 0.0.255.255 
+! 
+ip access-list extended PRE-AUTH-PERMIT-ANY 
+ 10 permit ip any any 
+! 
+ip radius source-interface Vlan99  
+logging history size 500 
+logging facility local0 
+logging source-interface Vlan99 
+logging host 10.161.16.28 transport udp port 5141 
+logging host 172.30.37.7 
+logging host 10.161.16.28 
+logging host 10.161.5.23 
+logging host 10.228.188.200 
+ip access-list standard 1 
+ 360 permit 10.30.64.84 
+ 10 permit 10.30.64.85 
+ 160 permit 10.162.163.13 
+ 170 permit 172.17.167.14 
+ 180 permit 172.28.239.121 
+ 190 permit 10.161.5.132 
+ 200 permit 10.219.178.44 
+ 210 permit 10.143.179.99 
+ 150 permit 172.20.83.149 
+ 40 permit 172.30.37.18 
+ 30 permit 172.30.37.17 
+ 20 permit 172.30.37.16 
+ 330 permit 10.162.204.238 
+ 260 permit 10.228.188.195 
+ 270 permit 10.228.188.199 
+ 250 permit 10.64.190.98 
+ 280 permit 10.228.188.200 
+ 290 permit 10.64.190.104 
+ 300 permit 10.64.190.105 
+ 60 permit 172.30.67.85 
+ 50 permit 172.30.67.84 
+ 140 permit 10.161.16.28 
+ 220 permit 10.161.5.23 
+ 230 permit 172.21.246.129 
+ 340 permit 10.214.190.176 
+ 130 permit 10.64.179.36 
+ 350 permit 10.139.189.217 
+ 110 permit 172.30.68.28 
+ 100 permit 172.30.68.27 
+ 80 permit 172.30.68.6 
+ 320 permit 10.161.30.69 
+ 90 permit 172.30.68.7 
+ 70 permit 172.30.68.5 
+ 310 permit 10.161.30.67 
+ 240 permit 172.29.83.27 
+ip access-list standard 2 
+ 10 permit 172.30.37.59 
+! 
+snmp-server community lan-read RO 1 
+snmp-server trap-source Vlan99 
+snmp-server location MKZ 
+snmp-server contact Infineon Network Infrastructure, +43-5-1777-4444, noc@infineon.com 
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart 
+snmp-server enable traps flowmon 
+snmp-server enable traps entity-perf throughput-notif 
+snmp-server enable traps call-home message-send-fail server-fail 
+snmp-server enable traps tty 
+snmp-server enable traps ospf state-change 
+snmp-server enable traps ospf errors 
+snmp-server enable traps ospf retransmit 
+snmp-server enable traps ospf lsa 
+snmp-server enable traps ospf cisco-specific state-change nssa-trans-change 
+snmp-server enable traps ospf cisco-specific state-change shamlink interface 
+snmp-server enable traps ospf cisco-specific state-change shamlink neighbor 
+snmp-server enable traps ospf cisco-specific errors 
+snmp-server enable traps ospf cisco-specific retransmit 
+snmp-server enable traps ospf cisco-specific lsa 
+snmp-server enable traps eigrp 
+snmp-server enable traps auth-framework sec-violation 
+snmp-server enable traps rep 
+snmp-server enable traps vtp 
+snmp-server enable traps vlancreate 
+snmp-server enable traps vlandelete 
+snmp-server enable traps port-security 
+snmp-server enable traps license 
+snmp-server enable traps smart-license 
+snmp-server enable traps cpu threshold 
+snmp-server enable traps memory bufferpeak 
+snmp-server enable traps stackwise 
+snmp-server enable traps fru-ctrl 
+snmp-server enable traps flash insertion removal lowspace 
+snmp-server enable traps energywise 
+snmp-server enable traps power-ethernet group 1 threshold 80 
+snmp-server enable traps power-ethernet group 2 threshold 80 
+snmp-server enable traps power-ethernet group 3 threshold 80 
+snmp-server enable traps power-ethernet police 
+snmp-server enable traps entity 
+snmp-server enable traps envmon 
+snmp-server enable traps ipsla 
+snmp-server enable traps bfd 
+snmp-server enable traps ike policy add 
+snmp-server enable traps ike policy delete 
+snmp-server enable traps ike tunnel start 
+snmp-server enable traps ike tunnel stop 
+snmp-server enable traps ipsec cryptomap add 
+snmp-server enable traps ipsec cryptomap delete 
+snmp-server enable traps ipsec cryptomap attach 
+snmp-server enable traps ipsec cryptomap detach 
+snmp-server enable traps ipsec tunnel start 
+snmp-server enable traps ipsec tunnel stop 
+snmp-server enable traps ipsec too-many-sas 
+snmp-server enable traps config-copy 
+snmp-server enable traps config 
+snmp-server enable traps config-ctid 
+snmp-server enable traps dhcp 
+snmp-server enable traps event-manager 
+snmp-server enable traps ipmulticast 
+snmp-server enable traps msdp 
+snmp-server enable traps ospfv3 state-change 
+snmp-server enable traps ospfv3 errors 
+snmp-server enable traps pim neighbor-change rp-mapping-change invalid-pim-message 
+snmp-server enable traps bridge newroot topologychange 
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency 
+snmp-server enable traps syslog 
+snmp-server enable traps pimstdmib neighbor-loss invalid-register invalid-join-prune rp-mapping-change interface-election 
+snmp-server enable traps vlan-membership 
+snmp-server enable traps errdisable 
+snmp-server enable traps rf 
+snmp-server enable traps transceiver all 
+snmp-server enable traps bulkstat collection transfer 
+snmp-server enable traps mac-notification change move threshold 
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down 
+snmp-server host 172.30.37.16 lan-read  
+snmp-server host 172.30.37.17 lan-read  
+snmp-server host 172.30.37.18 lan-read  
+snmp ifmib ifindex persist 
+tacacs-server directed-request 
+tacacs server MUCSNR13 
+ address ipv4 10.30.135.104 
+ key 7 030B5953150C29415B0703091200 
+tacacs server MUCSNR14 
+ address ipv4 10.30.135.105 
+ key 7 070023145D0A1108021C11000138 
+! 
+radius-server attribute 6 on-for-login-auth 
+radius-server attribute 8 include-in-access-req 
+radius-server attribute 32 include-in-access-req  
+radius-server attribute 25 access-request include 
+radius-server dead-criteria time 5 tries 3 
+radius-server deadtime 5 
+! 
+radius server MKZSNR01 
+ address ipv4 172.30.147.3 auth-port 1812 acct-port 1813 
+ automate-tester username radius-test 
+ key 7 020906031805072C594013150005 
+! 
+radius server MKZSNR02 
+ address ipv4 172.30.147.4 auth-port 1812 acct-port 1813 
+ automate-tester username radius-test 
+ key 7 05040457324F46040C0B0D1E0E1E 
+! 
+! 
+control-plane 
+ service-policy input system-cpp-policy 
+! 
+banner login ^C 
+******************************************************* 
+*   This is an Infineon Technologies computer system  * 
+*          ! UNAUTHORIZED ACCESS PROHIBITED !         * 
+******************************************************* 
+^C 
+banner motd ^C 
+******************************************************** 
+*               Infineon Technologies AG               * 
+******************************************************** 
+*                                                      * 
+*     Contact:   Infineon Network Infrastructure       * 
+*                +43-51777-4444                        * 
+*                ni@infineon.com                       * 
+*                                                      * 
+******************************************************** 
+*             ! ATTENTION - DOT1X ACTIVE !             * 
+******************************************************** 
+^C 
+! 
+line con 0 
+ exec-timeout 20 0 
+ logging synchronous 
+ vacant-message ^C
+ 
+*******************************************************
+ 
+*           ! Your login time has expired !           *
+ 
+*******************************************************
+ 
+^C 
+ stopbits 1 
+line vty 0 4 
+ access-class line-access in 
+ exec-timeout 20 0 
+ logging synchronous 
+ vacant-message ^C
+ 
+*******************************************************
+ 
+*           ! Your login time has expired !           *
+ 
+*******************************************************
+ 
+^C 
+ transport input ssh 
+line vty 5 15 
+ access-class line-access in 
+ exec-timeout 20 0 
+ logging synchronous 
+ vacant-message ^C
+ 
+*******************************************************
+ 
+*           ! Your login time has expired !           *
+ 
+*******************************************************
+ 
+^C 
+ transport input ssh 
+line vty 16 31 
+ transport input ssh 
+! 
+call-home 
+ ! If contact email address in call-home is configured as sch-smart-licensing@cisco.com 
+ ! the email address configured in Cisco Smart License Portal will be used as contact email address to send SCH notifications. 
+ contact-email-addr sch-smart-licensing@cisco.com 
+ no http secure server-identity-check 
+ profile &quot;CiscoTAC-1&quot; 
+  destination transport-method http 
+ profile &quot;ON-PREM-CSSM&quot; 
+  no reporting smart-call-home-data 
+  reporting smart-licensing-data 
+  destination transport-method http 
+  no destination transport-method email 
+  destination address http http://10.30.135.82:80/Transportgateway/services/DeviceRequestHandler  
+ntp authentication-key 1 md5 020906031805072C594013150005 7 
+ntp authenticate 
+ntp trusted-key 1 
+ntp source Vlan99 
+ntp access-group peer 2 
+ntp server 172.30.37.59 key 1 
+! 
+mac address-table notification change 
+! 
+! 
+! 
+! 
+! 
+end 
