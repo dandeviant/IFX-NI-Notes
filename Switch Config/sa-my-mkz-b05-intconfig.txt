@@ -1,4 +1,4 @@
-!# File for interface config, including VLAN interface
+!# TXT file for interface config, including necessary VLAN interfaces
 !# Switch Model  : Cisco Cat 9300L
 
 
@@ -6,7 +6,7 @@ interface GigabitEthernet1/1/1
  description #UPLINK sd-my-mkz-b05-0101.ap.lan 
  switchport mode trunk 
  device-tracking attach-policy DT_trunk_policy 
- ip dhcp snooping trust 
+ ip dhcp snooping trust
 ! 
 interface GigabitEthernet1/1/2 
  shutdown 
