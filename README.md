@@ -1,8 +1,8 @@
 # IFX NI Notes
 
-Some theoretical must-knows related to Infineon IT OS NI network operation works.\
-I used Obsidian and VS Code to write these.\ 
-Use whatever the fuck you want to read it.\
+Some theoretical must-knows related to Infineon IT OS NI network operation works.
+\I used Obsidian and VS Code to write these. 
+\Use whatever the fuck you want to read it.
 
 https://obsidian.md/
 
