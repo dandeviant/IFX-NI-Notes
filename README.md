@@ -1,4 +1,4 @@
-# IFX NI Notes
+# IFX NI stuffs
 
 Some theoretical must-knows related to Infineon IT OS NI network operation works. \
 I used Obsidian and VS Code to write these. \
